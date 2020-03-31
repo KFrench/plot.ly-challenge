@@ -1,30 +1,18 @@
 
-function unpack(rows, index) {
-    return rows.map(function(row) {
-      return row[index];
-    });
-}
+// function unpack(rows, index) {
+//     return rows.map(function(row) {
+//       return row[index];
+//     });
+// }
+
 //Read in json file
-d3.json("data/samples.json").then((samples) => {
+ d3.json("data/samples.json").then((samples) => {
     console.log(samples);
-});   
+}); 
+//Bar chart and Bubble Chart data  
 function buildplot(sampleid) {d3.json("data/samples.json").then((belly) => {
     var samples = belly.samples;
     console.log(samples);
-
-    var meta = belly.metadata;
-    console.log(meta);
-
-    var filteredmeta = meta.filter(metaobject => metaobject.id == sampleid)
-    console.log(filteredmeta);
-
-    var cell = d3.select("panel-body");
-    cell.html("");
-    Object.entries(meta).forEach(function([key, value]) {
-        var row = cell.append("sample-metadata");
-        row.text(value);
-    });
-    
 
     var filtereddata = samples.filter(sampleobject => sampleobject.id == sampleid)
     console.log(filtereddata);
@@ -34,8 +22,25 @@ function buildplot(sampleid) {d3.json("data/samples.json").then((belly) => {
     var samplevalues = filtereddata[0].sample_values;
 
     console.log(otuids);
+//Demographic information
+    var meta = belly.metadata;
+    console.log(meta);
 
+    var filteredmeta = meta.filter(metaobject => metaobject.id == sampleid)
+    filteredmeta = filteredmeta[0];
+    console.log(filteredmeta);
 
+    var cell = d3.select(".panel-body").append("p");
+    cell.html("");
+    var dinfo= ("");
+    
+    Object.entries(filteredmeta).forEach(function([key, value]) {
+    cell.text(value);
+        dinfo = dinfo + `${key}: ${value}<br>`;   
+    });
+    cell.html(dinfo);
+
+//Build the bar chart 
 var trace1 = {
     x: samplevalues.slice(0,10),
     y: labels.slice(0,10),
@@ -54,6 +59,7 @@ var layout1 = {
           
 Plotly.plot("bar", data1, layout1);
 
+//Build the bubble chart 
 var trace2 = {
     type:"scatter",
     mode:"markers",
@@ -78,7 +84,7 @@ Plotly.plot("bubble", data2, layout2);
 
 });  
 }  
-
+//Build function that allows for dynamic updating on selected test subject
 function dropdown() {
     var selector = d3.select("#selDataset");
     d3.json("data/samples.json").then((belly) => {
