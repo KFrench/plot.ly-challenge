@@ -5,30 +5,32 @@
 //Bar chart and Bubble Chart data  
 function buildplot(sampleid) {d3.json("data/samples.json").then((belly) => {
     var samples = belly.samples;
-    console.log(samples);
+    // console.log(samples);
 
     var filtereddata = samples.filter(sampleobject => sampleobject.id == sampleid)
-    console.log(filtereddata);
+    // console.log(filtereddata);
 
     var otuids = filtereddata[0].otu_ids;
     var labels = filtereddata[0].otu_labels;
     var samplevalues = filtereddata[0].sample_values;
 
-    console.log(otuids);
+    // console.log(otuids);
 //Demographic information
     var meta = belly.metadata;
-    console.log(meta);
+    // console.log(meta);
 
     var filteredmeta = meta.filter(metaobject => metaobject.id == sampleid)
     filteredmeta = filteredmeta[0];
-    console.log(filteredmeta);
+    console.log("data", filteredmeta);
 
-    var cell = d3.select(".panel-body").append("p");
+    var cell = d3.select(".panel-body");
     cell.html("");
+    cell.append("p");
     var dinfo= ("");
     
+    
     Object.entries(filteredmeta).forEach(function([key, value]) {
-    cell.text(value);
+    // cell.text(value);
         dinfo = dinfo + `${key}: ${value}<br>`;   
     });
     cell.html(dinfo);
@@ -49,8 +51,7 @@ var layout1 = {
     margin: { t: 30, l: 150 },
     showlegend:false,
 };
-          
-Plotly.plot("bar", data1, layout1);
+Plotly.newPlot("bar", data1, layout1);
 
 //Build the bubble chart 
 var trace2 = {
@@ -72,16 +73,15 @@ var layout2 = {
     showlegend:false,
 
 };
-
-Plotly.plot("bubble", data2, layout2);
+Plotly.newPlot("bubble", data2, layout2);
 
 var data3 = [
     {
       domain: { x: [0, 1], y: [0, 1] },
       value: filteredmeta.wfreq,
-      title: { text: "Belly Button Washing Frequency" },
+      title: { text: "Belly Button Washing Frequency: Scrubs Per Week" },
       type: "indicator",
-      mode: "gauge+number",
+      mode: "gauge+number+hand",
       delta: { reference: 5 },
       gauge: {
         axis: { range: [null, 10] },
@@ -101,7 +101,7 @@ var data3 = [
     
   ];
   
-  var layout3 = { width: 600, height: 450, margin: { t: 0, b: 0 } };
+  var layout3 = { type:'line', width: 600, height: 450, margin: { t: 0, b: 0 } };
   Plotly.newPlot('gauge', data3, layout3);
 
 });  
@@ -124,7 +124,7 @@ function dropdown() {
     }
 dropdown();
 
-function optionChanged(sample) {
+function optionChanged(sample) { 
     buildplot(sample);
 }
 
